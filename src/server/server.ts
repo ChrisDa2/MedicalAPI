@@ -16,6 +16,7 @@ export class Server {
 
   constructor(private readonly api: Api) {
     this.app = express();
+    console.log('Starting server...');
     this.setupServer();
   }
 
@@ -23,6 +24,12 @@ export class Server {
     this.app.use(cors());
     this.app.use(json({ limit: '5mb' }));
     this.app.use(urlencoded({ extended: false }));
+
+    // Logs for control
+    this.app.use((req, res, next) => {
+      console.log(`REQUEST RECEIVED: ${req.method} ${req.url}`);
+      next();
+    });
     this.app.use(morgan('dev'));
 
     this.app.use('/api', this.api.getApiRouter());

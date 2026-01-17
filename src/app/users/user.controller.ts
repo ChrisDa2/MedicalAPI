@@ -11,6 +11,10 @@ import { config } from '../../config/environment';
 
 // ==================== MIDDLEWARE ====================
 export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
+  console.log('\n=== AUTHENTICATE MIDDLEWARE CALLED ===');
+  console.log('Request path:', req.path);
+  console.log('Authorization header:', req.headers.authorization);
+
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -20,6 +24,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
 
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, config.user_sessions.secret) as { id: number; role: UserRole };
+    console.log('User from token:', decoded);
     (req as any).user = decoded;
     next();
   } catch (error: any) {
@@ -99,17 +104,20 @@ export class UserController {
 
   private setupRoutes(): void {
     // ========== PUBLIC ROUTES ==========
-    this.router.post('/patients/register', this.registerPatient.bind(this));
-    this.router.post('/doctors/register', this.registerDoctor.bind(this));
+    this.router.post('/patients', this.registerPatient.bind(this));
+    this.router.post('/doctors', this.registerDoctor.bind(this));
     this.router.post('/login', this.login.bind(this));
     this.router.get('/doctors', this.getDoctorsPublic.bind(this));
 
     // ========== PROTECTED ROUTES ==========
-    this.router.put('/profile', authenticate, this.updateProfile.bind(this));
-    this.router.get('/', authenticate, authorize([UserRole.ADMIN]), this.listUsers.bind(this));
+    this.router.get('/me', authenticate, this.getMyProfile.bind(this));
+    this.router.put('/me', authenticate, this.updateMyProfile.bind(this));
+
+    // Admin only routes
+    this.router.get('', authenticate, authorize([UserRole.ADMIN]), this.listUsers.bind(this));
     this.router.get('/search', authenticate, authorize([UserRole.ADMIN]), this.searchUsers.bind(this));
     this.router.get('/:id', authenticate, authorize([UserRole.ADMIN]), this.getUser.bind(this));
-    this.router.get('/me', authenticate, this.getMyProfile.bind(this));
+    this.router.put('/:id', authenticate, authorize([UserRole.ADMIN]), this.updateUser.bind(this));
   }
 
 
@@ -228,7 +236,7 @@ export class UserController {
     }
   }
 
-  private async updateProfile(req: Request, res: Response): Promise<void> {
+  private async updateMyProfile(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user.id;
       const { password, ...updates } = req.body;
@@ -247,7 +255,7 @@ export class UserController {
       if (updated) {
         res.status(200).json({ 
           success: true,
-          message: 'Profile updated successfully' 
+          message: 'Your profile updated successfully' 
         });
       } else {
         res.status(404).json({ 
@@ -255,13 +263,70 @@ export class UserController {
           message: 'User not found or no changes made' 
         });
       }
-      
+
     } catch (error: any) {
-      console.error('Update profile error:', error);
+      console.error('Update my profile error:', error);
       
       res.status(400).json({ 
         error: 'Update error',
-        message: error.message || 'Could not update profile' 
+        message: error.message || 'Could not update your profile' 
+      });
+    }
+  }
+
+  private async updateUser(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = parseInt(String(req.params.id));
+      const adminId = (req as any).user.id;
+      
+      if (isNaN(userId) || userId <= 0) {
+        res.status(400).json({ 
+          error: 'Invalid ID',
+          message: 'User ID must be a positive number' 
+        });
+        return;
+      }
+
+      // Avoid admin updating own profile via this route
+      if (userId === adminId) {
+        res.status(400).json({ 
+          error: 'Use /me endpoint',
+          message: 'To update your own profile, use PUT /api/users/me' 
+        });
+        return;
+      }
+
+      const { password, role, ...updates } = req.body;
+      
+      if (Object.keys(updates).length === 0 && !password) {
+        res.status(400).json({ 
+          error: 'No changes',
+          message: 'No data provided for update' 
+        });
+        return;
+      }
+      
+      const updateData = password ? { ...updates, password } : updates;
+      const updated = await this.userService.updateProfile(userId, updateData);
+      
+      if (updated) {
+        res.status(200).json({ 
+          success: true,
+          message: 'User profile updated successfully' 
+        });
+      } else {
+        res.status(404).json({ 
+          error: 'User not found',
+          message: `User with ID ${userId} not found` 
+        });
+      }
+      
+    } catch (error: any) {
+      console.error('Update user error:', error);
+      
+      res.status(400).json({ 
+        error: 'Update error',
+        message: error.message || 'Could not update user profile' 
       });
     }
   }
@@ -327,7 +392,7 @@ export class UserController {
 
   private async getUser(req: Request, res: Response): Promise<void> {
     try {
-      const userId = parseInt(req.params.id);
+      const userId = parseInt(String(req.params.id));
       
       if (isNaN(userId) || userId <= 0) {
         res.status(400).json({ 

@@ -18,8 +18,6 @@ export class Api {
     //this.apiRouter.use('/medical-records', medicalRecordRoutes);
     //this.apiRouter.use('/hospitals', hospitalRoutes);
 
-
-
   }
 
   getApiRouter(): Router {

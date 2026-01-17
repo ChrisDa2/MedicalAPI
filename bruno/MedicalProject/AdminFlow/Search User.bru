@@ -1,0 +1,24 @@
+meta {
+  name: Search User
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/users/search?name=Juan
+  body: none
+  auth: inherit
+}
+
+params:query {
+  name: Juan
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
