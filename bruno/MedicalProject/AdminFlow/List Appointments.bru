@@ -1,0 +1,20 @@
+meta {
+  name: List Appointments
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/appointments/admin/all
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

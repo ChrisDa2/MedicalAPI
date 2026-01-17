@@ -1,0 +1,20 @@
+meta {
+  name: Complete Appointment
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/appointments/doctor/3/complete
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{doctorToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

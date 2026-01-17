@@ -1,0 +1,38 @@
+{
+  "name": "Development",
+  "variables": [
+    {
+      "name": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "text",
+      "enabled": true,
+      "secret": false
+    },
+    {
+      "name": "adminToken",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY4NjU0MDI1LCJleHAiOjE3NjkyNTg4MjV9.XB1JKiOfAMci7pROI_WfLzu378rCffARIz-3eVU1blQ",
+      "type": "text",
+      "enabled": true,
+      "secret": false
+    },
+    {
+      "name": "patientToken",
+      "value": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6InBhdGllbnQiLCJpYXQiOjE3Njg2MDk5NjcsImV4cCI6MTc2OTIxNDc2N30.sHav_QuRAG7Zry2aQeCGi7RsjeEcdblE7l6B176Uwvo\"",
+      "type": "text",
+      "enabled": true,
+      "secret": false
+    },
+    {
+      "name": "patientToken",
+      "value": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6ImRvY3RvciIsImlhdCI6MTc2ODYxMDAxNywiZXhwIjoxNzY5MjE0ODE3fQ.dHd9gfnj12yaUsfJvbJ1REnL_b-C4rnPpcccmpq19HE\"",
+      "type": "text",
+      "enabled": true,
+      "secret": false
+    }
+  ],
+  "info": {
+    "type": "bruno-environment",
+    "exportedAt": "2026-01-17T18:24:12.021Z",
+    "exportedUsing": "Bruno/v3.0.2"
+  }
+}

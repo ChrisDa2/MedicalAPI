@@ -25,11 +25,6 @@ export class Server {
     this.app.use(json({ limit: '5mb' }));
     this.app.use(urlencoded({ extended: false }));
 
-    // Logs for control
-    this.app.use((req, res, next) => {
-      console.log(`REQUEST RECEIVED: ${req.method} ${req.url}`);
-      next();
-    });
     this.app.use(morgan('dev'));
 
     this.app.use('/api', this.api.getApiRouter());

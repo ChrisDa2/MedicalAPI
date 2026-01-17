@@ -11,9 +11,9 @@ import { config } from '../../config/environment';
 
 // ==================== MIDDLEWARE ====================
 export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
-  console.log('\n=== AUTHENTICATE MIDDLEWARE CALLED ===');
-  console.log('Request path:', req.path);
-  console.log('Authorization header:', req.headers.authorization);
+  //console.log('\n=== AUTHENTICATE MIDDLEWARE CALLED ===');
+  //console.log('Request path:', req.path);
+  //console.log('Authorization header:', req.headers.authorization);
 
   try {
     const authHeader = req.headers.authorization;
@@ -24,7 +24,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
 
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, config.user_sessions.secret) as { id: number; role: UserRole };
-    console.log('User from token:', decoded);
+    //console.log('User from token:', decoded);
     (req as any).user = decoded;
     next();
   } catch (error: any) {

@@ -12,7 +12,7 @@ export class DatabaseService {
   private db: Database<sqlite3.Database, sqlite3.Statement> | null = null;
 
   public async openDatabase(): Promise<Database<sqlite3.Database, sqlite3.Statement>> {
-    console.log(`Opening database connection...`);
+    //console.log(`Opening database connection...`);
     if (this.db) {
       return this.db;
     }

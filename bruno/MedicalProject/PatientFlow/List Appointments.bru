@@ -1,0 +1,20 @@
+meta {
+  name: List Appointments
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/appointments
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{patientToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

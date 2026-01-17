@@ -1,0 +1,20 @@
+meta {
+  name: Cancel Appointment
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/api/appointments/4
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{patientToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

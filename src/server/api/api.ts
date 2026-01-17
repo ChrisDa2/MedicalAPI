@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { Service } from 'typedi';
 import { userRoutes } from '../../app/users/user.controller';
+import { appointmentRoutes } from '../../app/appointments/appointment.controller';
 
 @Service()
 export class Api {
@@ -14,7 +15,7 @@ export class Api {
   private setupRoutes(): void {
     // Routes
     this.apiRouter.use('/users', userRoutes);
-    //this.apiRouter.use('/appointments', appointmentRoutes);
+    this.apiRouter.use('/appointments', appointmentRoutes);
     //this.apiRouter.use('/medical-records', medicalRecordRoutes);
     //this.apiRouter.use('/hospitals', hospitalRoutes);
 
