@@ -1,0 +1,26 @@
+meta {
+  name: Patient Registration
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/users/patients
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Juan Pérez",
+    "email": "juan.perez@example.com",
+    "password": "password123",
+    "telephone": "123456789",
+    "dateBirth": "1990-01-01"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

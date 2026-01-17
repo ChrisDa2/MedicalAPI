@@ -1,0 +1,28 @@
+meta {
+  name: Update Profile
+  type: http
+  seq: 1
+}
+
+put {
+  url: {{baseUrl}}/api/users/me
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{doctorToken}}
+}
+
+body:json {
+  {
+    "name": "Mi Nombre Actualizado",
+    "telephone": "111222333",
+    "password": "nuevaPassword123"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
