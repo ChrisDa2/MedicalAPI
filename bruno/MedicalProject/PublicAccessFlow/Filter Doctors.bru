@@ -1,0 +1,23 @@
+meta {
+  name: Filter Doctors
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/users/doctors/search
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "specialty": "Cardiology",
+    "idHospital": 1
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

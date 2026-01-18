@@ -1,0 +1,37 @@
+meta {
+  name: Manage Availability
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/users/doctor/availability
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{doctorToken}}
+}
+
+body:json {
+  {
+    "availability": [
+      {
+        "dayOfWeek": 1,
+        "startTime": "12:00",
+        "endTime": "17:00"
+      },
+      {
+        "dayOfWeek": 3,
+        "startTime": "10:00",
+        "endTime": "18:00"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

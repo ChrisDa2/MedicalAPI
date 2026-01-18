@@ -13,6 +13,17 @@ export interface User {
   role: UserRole;
 }
 
+export interface DoctorSearchFilters {
+  name?: string;
+  specialty?: string;
+  idHospital?: number;
+  availability?: {
+    dayOfWeek?: number;
+    startTime?: string;
+    endTime?: string;
+  };
+}
+
 export interface Patient extends User {
   dateBirth: Date;
 }
@@ -32,6 +43,17 @@ export interface DoctorAvailability {
   dayOfWeek: number;
   startTime: string;
   endTime: string;
+}
+
+export interface DoctorUpdateData {
+  name?: string;
+  email?: string;
+  password?: string;
+  telephone?: string;
+  dateBirth?: Date;
+  specialty?: string;
+  idHospital?: number;
+  availability?: DoctorAvailability[];
 }
 
 export interface LoginCredentials {

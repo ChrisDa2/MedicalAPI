@@ -44,3 +44,19 @@ export interface AppointmentQueryParams {
   sortBy?: string;
   sortOrder?: 'ASC' | 'DESC';
 }
+
+
+//  ==========  APPOINTMENT-SETTINGS ==========
+
+export interface AppointmentSettings {
+  id: number;
+  startTime: string;  // formato "HH:MM"
+  endTime: string;    // formato "HH:MM"
+  duration: number;   // minutos
+}
+
+export interface AppointmentSettingsUpdate {
+  startTime?: string;
+  endTime?: string;
+  duration?: number;
+}

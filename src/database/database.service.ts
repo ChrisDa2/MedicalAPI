@@ -124,6 +124,15 @@ export class DatabaseService {
       `);
 
       await this.db!.exec(`
+        CREATE TABLE appointment_settings (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          startTime VARCHAR(5) NOT NULL DEFAULT '09:00',
+          endTime VARCHAR(5) NOT NULL DEFAULT '18:00',
+          duration INTEGER NOT NULL DEFAULT 20
+        );
+      `);
+
+      await this.db!.exec(`
         CREATE TABLE IF NOT EXISTS medical_records (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           idAppointment INTEGER NOT NULL,
@@ -167,6 +176,21 @@ export class DatabaseService {
         }
       } catch (error) {
         console.warn('Could not create admin user:', error);
+      }
+
+      // Insert default Appointment Settings if none exist
+      try {
+        const result = await this.db!.get('SELECT COUNT(*) as count FROM appointment_settings');
+
+        if (result && result.count === 0) {
+          await this.db!.run(`
+            INSERT INTO appointment_settings (startTime, endTime, duration) VALUES ('09:00', '18:00', 20););
+          `);
+
+          console.log('Appointment settings created successfully');
+        }
+      } catch (error) {
+        console.warn('Could not create appointment settings:', error);
       }
 
       // Insert sample hospitals if none exist

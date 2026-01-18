@@ -7,6 +7,8 @@ import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
 import { UserRole } from './user.model';
 import { config } from '../../config/environment';
+import { AppointmentRepository } from '../appointments/appointment.repository';
+import { AppointmentService } from '../appointments/appointment.service';
 
 
 // ==================== MIDDLEWARE ====================
@@ -108,10 +110,14 @@ export class UserController {
     this.router.post('/doctors', this.registerDoctor.bind(this));
     this.router.post('/login', this.login.bind(this));
     this.router.get('/doctors', this.getDoctorsPublic.bind(this));
+    this.router.get('/doctors/search', this.searchDoctors.bind(this));
 
     // ========== PROTECTED ROUTES ==========
     this.router.get('/me', authenticate, this.getMyProfile.bind(this));
     this.router.put('/me', authenticate, this.updateMyProfile.bind(this));
+
+    // Doctor only routes
+    this.router.put('/doctor/availability', authenticate, authorize([UserRole.DOCTOR]), this.manageAvailability.bind(this));
 
     // Admin only routes
     this.router.get('', authenticate, authorize([UserRole.ADMIN]), this.listUsers.bind(this));
@@ -493,6 +499,177 @@ export class UserController {
         message: 'Could not retrieve doctors' 
       });
     }
+  }
+
+  private async searchDoctors(req: Request, res: Response): Promise<void> {
+    try {
+      const filters = req.body;
+      
+      if (filters && typeof filters !== 'object') {
+        res.status(400).json({ 
+          error: 'Invalid filters',
+          message: 'Filters must be a JSON object' 
+        });
+        return;
+      }
+
+      const doctors = await this.userService.searchDoctors(filters);
+      
+      res.status(200).json({
+        success: true,
+        count: doctors.length,
+        doctors
+      });
+      
+    } catch (error: any) {
+      console.error('Search doctors error:', error);
+      
+      if (error.message === 'Invalid filter parameters') {
+        res.status(400).json({ 
+          error: 'Invalid filters',
+          message: error.message 
+        });
+      } else {
+        res.status(500).json({ 
+          error: 'Search error',
+          message: 'Could not perform doctor search' 
+        });
+      }
+    }
+  }
+
+  private async manageAvailability(req: Request, res: Response): Promise<void> {
+    try {
+      const doctorId = (req as any).user.id;
+      const { availability } = req.body;
+      
+      if (!availability || !Array.isArray(availability)) {
+        res.status(400).json({ 
+          error: 'Invalid data',
+          message: 'Availability must be an array of time slots' 
+        });
+        return;
+      }
+      
+      // Validate each slot
+      const validationResult = await this.validateDoctorAvailability(availability);
+      if (!validationResult.valid) {
+        res.status(400).json({ 
+          error: 'Invalid availability',
+          message: validationResult.error 
+        });
+        return;
+      }
+      
+      const updated = await this.userService.updateDoctorAvailability(doctorId, availability);
+      
+      if (updated) {
+        res.status(200).json({ 
+          success: true,
+          message: 'Availability updated successfully',
+          availability 
+        });
+      } else {
+        res.status(400).json({ 
+          error: 'Update failed',
+          message: 'Could not update availability' 
+        });
+      }
+      
+    } catch (error: any) {
+      console.error('Manage availability error:', error);
+      
+      if (error.message.includes('outside allowed hours') || 
+          error.message.includes('must be before')) {
+        res.status(400).json({ 
+          error: 'Validation error',
+          message: error.message 
+        });
+      } else {
+        res.status(500).json({ 
+          error: 'Update error',
+          message: error.message || 'Could not update availability' 
+        });
+      }
+    }
+  }
+
+  private async validateDoctorAvailability(availability: any[]): Promise<{ valid: boolean; error?: string }> {
+    try {
+      // Obtener configuración de appointments
+      const dbService = Container.get(DatabaseService);
+      const appointmentRepository = new AppointmentRepository(dbService);
+      const appointmentService = new AppointmentService(appointmentRepository);
+      
+      const settings = await appointmentService.getAppointmentSettings();
+      const startMinutes = this.timeToMinutes(settings.startTime);
+      const endMinutes = this.timeToMinutes(settings.endTime);
+      
+      for (const slot of availability) {
+        if (!slot.dayOfWeek || slot.dayOfWeek < 0 || slot.dayOfWeek > 6) {
+          return {
+            valid: false,
+            error: 'dayOfWeek must be between 0 (Sunday) and 6 (Saturday)'
+          };
+        }
+        
+        if (!slot.startTime || !this.isValidTimeFormat(slot.startTime)) {
+          return {
+            valid: false,
+            error: `Invalid startTime format: ${slot.startTime}. Use "HH:MM"`
+          };
+        }
+        
+        if (!slot.endTime || !this.isValidTimeFormat(slot.endTime)) {
+          return {
+            valid: false,
+            error: `Invalid endTime format: ${slot.endTime}. Use "HH:MM"`
+          };
+        }
+        
+        const slotStart = this.timeToMinutes(slot.startTime);
+        const slotEnd = this.timeToMinutes(slot.endTime);
+        
+        if (slotStart < startMinutes || slotEnd > endMinutes) {
+          return {
+            valid: false,
+            error: `Availability slot ${slot.startTime}-${slot.endTime} is outside allowed hours (${settings.startTime}-${settings.endTime})`
+          };
+        }
+        
+        // Start time must be before end time
+        if (slotStart >= slotEnd) {
+          return {
+            valid: false,
+            error: `Start time must be before end time in slot ${slot.startTime}-${slot.endTime}`
+          };
+        }
+        
+        // validate minimum duration
+        const slotDuration = slotEnd - slotStart;
+        if (slotDuration < settings.duration) {
+          return {
+            valid: false,
+            error: `Slot duration (${slotDuration}min) is less than minimum appointment duration (${settings.duration}min)`
+          };
+        }
+      }
+      
+      return { valid: true };
+      
+    } catch (error) {
+      return { valid: false, error: 'Error validating availability' };
+    }
+  }
+
+  private isValidTimeFormat(time: string): boolean {
+    const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    return regex.test(time);
+  }
+
+  private timeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
   }
 
   public getRouter(): Router {

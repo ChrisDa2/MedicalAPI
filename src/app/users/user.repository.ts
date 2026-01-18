@@ -57,7 +57,7 @@ export class UserRepository {
     return (result as any).lastID || 0;
   }
 
-  async update(id: number, updates: Partial<Omit<User, 'id' | 'role'>>): Promise<boolean> {
+  async update(id: number, updates: Partial<Omit<User, 'id' | 'role'>> | { availability?: any }): Promise<boolean> {
     const fields = Object.keys(updates);
     if (fields.length === 0) return false;
 

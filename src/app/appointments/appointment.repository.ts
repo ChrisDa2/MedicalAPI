@@ -4,7 +4,9 @@ import {
   AppointmentCreateData, 
   AppointmentUpdateData, 
   AppointmentQueryParams,
-  AppointmentStatus 
+  AppointmentStatus, 
+  AppointmentSettings,
+  AppointmentSettingsUpdate
 } from './appointment.model';
 
 export class AppointmentRepository {
@@ -175,6 +177,54 @@ export class AppointmentRepository {
     return {
       ...row,
       date: new Date(row.date)
+    };
+  }
+
+
+  //  ==========  APPOINTMENT-SETTINGS ==========
+
+  async getAppointmentSettings(): Promise<AppointmentSettings> {
+    const result = await this.db.execQuery({
+      sql: 'SELECT * FROM appointment_settings ORDER BY id DESC LIMIT 1',
+      params: []
+    });
+    
+    if (!result.rows[0]) {
+      return await this.createDefaultSettings();
+    }
+    
+    return result.rows[0];
+  }
+
+  async updateAppointmentSettings(updates: AppointmentSettingsUpdate): Promise<boolean> {
+    const current = await this.getAppointmentSettings();
+    const newSettings = { ...current, ...updates };
+    
+    const result = await this.db.execQuery({
+      sql: `INSERT INTO appointment_settings (startTime, endTime, duration) 
+            VALUES (?, ?, ?)`,
+      params: [
+        newSettings.startTime,
+        newSettings.endTime,
+        newSettings.duration
+      ]
+    });
+    
+    return (result as any).lastID > 0;
+  }
+
+  private async createDefaultSettings(): Promise<AppointmentSettings> {
+    const result = await this.db.execQuery({
+      sql: `INSERT INTO appointment_settings (startTime, endTime, duration) 
+            VALUES ('09:00', '18:00', 20)`,
+      params: []
+    });
+    
+    return {
+      id: (result as any).lastID,
+      startTime: '09:00',
+      endTime: '18:00',
+      duration: 20
     };
   }
 }

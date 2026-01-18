@@ -46,6 +46,7 @@ export class AppointmentController {
 
     // Admin routes
     this.router.get('/admin/all', authenticate, authorize([UserRole.ADMIN]), this.getAllAppointments.bind(this));
+    this.router.get('/admin/settings', authenticate, authorize([UserRole.ADMIN]), this.getAppointmentSettings.bind(this));
     this.router.put('/admin/settings', authenticate, authorize([UserRole.ADMIN]), this.updateAppointmentSettings.bind(this));
   }
 
@@ -501,30 +502,70 @@ export class AppointmentController {
 
   private async updateAppointmentSettings(req: Request, res: Response): Promise<void> {
     try {
-      // This endpoint would typically update system-wide appointment settings
-      // For now, we'll just acknowledge it
-      
       const { startTime, endTime, duration } = req.body;
       
-      // TODO: Store these settings in a separate table or configuration
+      if (!startTime && !endTime && !duration) {
+        res.status(400).json({ 
+          error: 'No changes',
+          message: 'No data provided for update' 
+        });
+        return;
+      }
+      
+      const updates: any = {};
+      if (startTime) updates.startTime = startTime;
+      if (endTime) updates.endTime = endTime;
+      if (duration) updates.duration = parseInt(String(duration));
+      
+      const updatedSettings = await this.appointmentService.updateAppointmentSettings(updates);
       
       res.status(200).json({ 
         success: true,
-        message: 'Appointment settings updated successfully' 
+        message: 'Appointment settings updated successfully',
+        settings: updatedSettings
       });
       
     } catch (error: any) {
-      console.error('Update appointment settings error:', error);
-      
-      res.status(400).json({ 
-        error: 'Update error',
-        message: error.message || 'Could not update settings' 
-      });
-    }
+        console.error('Update appointment settings error:', error);
+        
+        if (error.message.includes('Invalid') || error.message.includes('must be')) {
+          res.status(400).json({ 
+            error: 'Validation error',
+            message: error.message 
+          });
+        } else {
+          res.status(500).json({ 
+            error: 'Update error',
+            message: error.message || 'Could not update settings' 
+          });
+        }
+      }
   }
 
   public getRouter(): Router {
     return this.router;
+  }
+
+
+  //  ==========  APPOINTMENT-SETTINGS ==========
+
+  private async getAppointmentSettings(req: Request, res: Response): Promise<void> {
+    try {
+      const settings = await this.appointmentService.getAppointmentSettings();
+      
+      res.status(200).json({
+        success: true,
+        settings
+      });
+      
+    } catch (error: any) {
+      console.error('Get appointment settings error:', error);
+      
+      res.status(500).json({ 
+        error: 'Internal error',
+        message: 'Could not retrieve appointment settings' 
+      });
+    }
   }
 }
 
