@@ -116,9 +116,6 @@ export class LogController {
         try {
           const user = (req as any).user;
           
-          // Only log autenticated users' actions
-          if (!user || !user.id) return;
-          
           // Not log log retrieval actions
           if (req.path.includes('/logs') && req.method === 'GET') return;
           
@@ -126,37 +123,21 @@ export class LogController {
           const logRepository = new LogRepository(dbService);
           const logService = new LogService(logRepository);
           
-          // Set Action
-          let action = 'VIEW';
-          switch (req.method) {
-            case 'POST': action = 'CREATE'; break;
-            case 'PUT': 
-            case 'PATCH': action = 'UPDATE'; break;
-            case 'DELETE': action = 'DELETE'; break;
-          }
+          // Set Action to HTTP method
+          const action = req.method;
           
-          // Set Resource
-          let resource = 'OTHER';
-          const path = req.path.toLowerCase();
-          
-          if (path.includes('users')) {
-            resource = 'USER';
-          } else if (path.includes('appointments')) {
-            resource = 'APPOINTMENT';
-          } else if (path.includes('medical-records')) {
-            resource = 'MEDICAL_RECORD';
-          } else if (path.includes('hospitals')) {
-            resource = 'HOSPITAL';
-          } else if (path.includes('auth') || path.includes('login')) {
-            resource = 'AUTH';
-          }
+          // Set Resource to the route path
+          const resource = req.baseUrl + req.path;
+
+          // If user not authenticated, set userId to null
+          const userId = user && user.id ? user.id : null;
           
           // Create log entry
           logService.createLog({
-            idUser: user.id,
+            idUser: userId,
             action,
             resource,
-            details: `${req.method} ${req.path} - Status: ${res.statusCode}`
+            details: `${req.method} ${resource} - Status: ${res.statusCode}`
           }).catch(error => {
             console.error('Failed to save log:', error);
           });

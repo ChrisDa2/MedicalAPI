@@ -1,10 +1,10 @@
 import { LogRepository } from './log.repository';
-import { Log, LogQueryParams } from './log.model';
+import { Log, LogQueryParams, CreateLogDTO } from './log.model';
 
 export class LogService {
   constructor(private logRepository: LogRepository) {}
 
-  async createLog(logData: Omit<Log, 'id' | 'timestamp'>): Promise<number> {
+  async createLog(logData: CreateLogDTO): Promise<number> {
     return this.logRepository.create(logData);
   }
 

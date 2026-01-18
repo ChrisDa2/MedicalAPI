@@ -26,7 +26,7 @@ export class Api {
     this.apiRouter.use('/appointments', appointmentRoutes);
     this.apiRouter.use('/medical-records', medicalRecordRoutes);
     this.apiRouter.use('/hospitals', hospitalRoutes);
-
+    this.apiRouter.use('/logs', logRoutes);
   }
 
   getApiRouter(): Router {

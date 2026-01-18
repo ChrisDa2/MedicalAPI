@@ -1,10 +1,10 @@
 import { DatabaseService } from '../../database/database.service';
-import { Log, LogQueryParams } from './log.model';
+import { CreateLogDTO, Log, LogQueryParams } from './log.model';
 
 export class LogRepository {
   constructor(private db: DatabaseService) {}
 
-  async create(logData: Omit<Log, 'id' | 'timestamp'>): Promise<number> {
+  async create(logData: CreateLogDTO): Promise<number> {
     const result = await this.db.execQuery({
       sql: `INSERT INTO logs (idUser, action, resource, details) 
             VALUES (?, ?, ?, ?)`,
