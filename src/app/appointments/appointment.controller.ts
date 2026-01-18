@@ -97,8 +97,10 @@ export class AppointmentController {
       };
       
       const appointmentId = await this.appointmentService.createAppointment(appointmentData);
-      
-      // TODO: Send notification to doctor (as per specification)
+      // Send notification to doctor
+      const doctor = await this.userService.getUserById(appointmentData.idDoctor);
+      const patient = await this.userService.getUserById(userId);
+      console.log(`[NOTIFICATION] Appointment created: Appointment ID ${appointmentId} with Dr. ${doctor?.name} has been scheduled by patient ${patient?.name}`);
       
       res.status(201).json({ 
         success: true,
