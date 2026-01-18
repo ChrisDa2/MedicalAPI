@@ -143,12 +143,12 @@ export class DatabaseService {
       await this.db!.exec(`
         CREATE TABLE IF NOT EXISTS logs (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          idUser INTEGER NOT NULL,
+          idUser INTEGER,
           action TEXT NOT NULL,
           resource TEXT NOT NULL,
           timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
           details TEXT,
-          FOREIGN KEY(idUser) REFERENCES users(id) ON DELETE CASCADE
+          FOREIGN KEY(idUser) REFERENCES users(id) ON DELETE SET NULL
         )
       `);
 
