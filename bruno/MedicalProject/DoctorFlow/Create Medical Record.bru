@@ -1,0 +1,34 @@
+meta {
+  name: Create Medical Record
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/medical-records/doctor/
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{doctorToken}}
+}
+
+body:json {
+  {
+    "idAppointment": 1,
+    "idPatient": 2,
+    "idSpeciality": 1,
+    "description": "The patient presents with symptoms of the common flu: fever, cough, general malaise.",
+    "treatment": "Rest, paracetamol 500mg every 8 hours, plenty of hydration",
+    "testResults": [
+      "blood-test-2024-01-15.pdf",
+      "xray-chest-2024-01-15.jpg"
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
