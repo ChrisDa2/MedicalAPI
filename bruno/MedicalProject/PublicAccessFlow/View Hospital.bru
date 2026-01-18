@@ -1,0 +1,15 @@
+meta {
+  name: View Hospital
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/hospitals/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
