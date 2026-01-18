@@ -4,6 +4,7 @@ import { userRoutes } from '../../app/users/user.controller';
 import { appointmentRoutes } from '../../app/appointments/appointment.controller';
 import { medicalRecordRoutes } from '../../app/medical-records/medical-record.controller';
 import { hospitalRoutes } from '../../app/hospitals/hospital.controller';
+import { logRoutes, logMiddleware } from '../../app/logs/log.controller';
 
 @Service()
 export class Api {
@@ -11,7 +12,12 @@ export class Api {
 
   constructor() {
     this.apiRouter = Router();
+    this.setupLogMiddleware();
     this.setupRoutes();
+  }
+
+  private setupLogMiddleware(): void {
+    this.apiRouter.use(logMiddleware);
   }
 
   private setupRoutes(): void {
