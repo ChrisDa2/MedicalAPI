@@ -46,45 +46,6 @@ export class HospitalRepository {
     return result.rows[0] ? this.mapHospital(result.rows[0]) : null;
   }
 
-  async filterByDepartment(department: string): Promise<Hospital[]> {
-    const result = await this.db.execQuery({
-      sql: `SELECT id, name, departments, services, location FROM hospitals`,
-      params: []
-    });
-    
-    const allHospitals = result.rows.map(row => this.mapHospital(row));
-    
-    return allHospitals.filter(hospital => 
-      hospital.departments.some(dept => 
-        dept.toLowerCase().includes(department.toLowerCase())
-      )
-    );
-  }
-
-  async filterByService(service: string): Promise<Hospital[]> {
-    const result = await this.db.execQuery({
-      sql: `SELECT id, name, departments, services, location FROM hospitals`,
-      params: []
-    });
-    
-    const allHospitals = result.rows.map(row => this.mapHospital(row));
-    
-    return allHospitals.filter(hospital => 
-      hospital.services.some(serv => 
-        serv.toLowerCase().includes(service.toLowerCase())
-      )
-    );
-  }
-
-  async searchByName(name: string): Promise<Hospital[]> {
-    const result = await this.db.execQuery({
-      sql: `SELECT id, name, departments, services, location FROM hospitals WHERE name LIKE ? ORDER BY name`,
-      params: [`%${name}%`]
-    });
-    
-    return result.rows.map(row => this.mapHospital(row));
-  }
-
   private mapHospital(row: any): Hospital {
     return {
       ...row,

@@ -18,9 +18,10 @@ export class HospitalController {
 
   private setupRoutes(): void {
     // ========== PUBLIC ROUTES ==========
+
     this.router.get('/', this.getAllHospitals.bind(this));
-    this.router.get('/:id', this.getHospitalById.bind(this));
     this.router.get('/search', this.searchHospitals.bind(this));
+    this.router.get('/:id', this.getHospitalById.bind(this));
   }
 
   // ========== HANDLERS ==========
@@ -28,24 +29,14 @@ export class HospitalController {
   private async getAllHospitals(req: Request, res: Response): Promise<void> {
     try {
       const { 
-        name, 
-        department, 
-        service, 
-        location,
         page = 1,
         limit = 20
       } = req.query;
       
-      const query = {
-        name: name as string,
-        department: department as string,
-        service: service as string,
-        location: location as string,
+      const hospitals = await this.hospitalService.getAllHospitals({
         page: parseInt(String(page)),
         limit: parseInt(String(limit))
-      };
-      
-      const hospitals = await this.hospitalService.getAllHospitals(query);
+      });
       
       res.status(200).json({
         success: true,
@@ -102,19 +93,25 @@ export class HospitalController {
 
   private async searchHospitals(req: Request, res: Response): Promise<void> {
     try {
-      const { name, department, service } = req.query;
+      const { 
+        name, 
+        department, 
+        service, 
+        location,
+        page = 1,
+        limit = 20
+      } = req.body;
       
-      let hospitals;
+      const query = {
+        name: name as string,
+        department: department as string,
+        service: service as string,
+        location: location as string,
+        page: parseInt(String(page)),
+        limit: parseInt(String(limit))
+      };
       
-      if (name) {
-        hospitals = await this.hospitalService.searchHospitals(name as string);
-      } else if (department) {
-        hospitals = await this.hospitalService.getHospitalsByDepartment(department as string);
-      } else if (service) {
-        hospitals = await this.hospitalService.getHospitalsByService(service as string);
-      } else {
-        hospitals = await this.hospitalService.getAllHospitals();
-      }
+      const hospitals = await this.hospitalService.getAllHospitals(query);
       
       res.status(200).json({
         success: true,

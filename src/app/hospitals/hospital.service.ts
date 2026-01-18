@@ -29,16 +29,4 @@ export class HospitalService {
   async getHospitalById(id: number): Promise<Hospital | null> {
     return this.hospitalRepository.findById(id);
   }
-
-  async searchHospitals(name: string): Promise<Hospital[]> {
-    return this.hospitalRepository.searchByName(name);
-  }
-
-  async getHospitalsByDepartment(department: string): Promise<Hospital[]> {
-    return this.hospitalRepository.filterByDepartment(department);
-  }
-
-  async getHospitalsByService(service: string): Promise<Hospital[]> {
-    return this.hospitalRepository.filterByService(service);
-  }
 }
