@@ -31,13 +31,14 @@ export class MedicalRecordController {
 
     // Doctor routes
     this.router.get('/doctor/records', authenticate, authorize([UserRole.DOCTOR]), this.getDoctorMedicalRecords.bind(this));
-    this.router.post('/doctor', authenticate, authorize([UserRole.DOCTOR]), this.createMedicalRecord.bind(this));
+    this.router.post('/doctor/', authenticate, authorize([UserRole.DOCTOR]), this.createMedicalRecord.bind(this));
     this.router.get('/doctor/:id', authenticate, authorize([UserRole.DOCTOR]), this.getMedicalRecord.bind(this));
     this.router.put('/doctor/:id/tests', authenticate, authorize([UserRole.DOCTOR]), this.updateTestResults.bind(this));
     this.router.put('/doctor/:id/treatment', authenticate, authorize([UserRole.DOCTOR]), this.updateTreatment.bind(this));
 
     // Admin routes
     this.router.get('/admin/all', authenticate, authorize([UserRole.ADMIN]), this.getAllMedicalRecords.bind(this));
+    this.router.get('/admin/:id', authenticate, authorize([UserRole.ADMIN]), this.getMedicalRecordAdmin.bind(this));
     this.router.get('/admin/search', authenticate, authorize([UserRole.ADMIN]), this.searchMedicalRecords.bind(this));
     this.router.put('/admin/:id', authenticate, authorize([UserRole.ADMIN]), this.updateMedicalRecord.bind(this));
   }
@@ -412,6 +413,44 @@ export class MedicalRecordController {
       res.status(500).json({ 
         error: 'Internal error',
         message: 'Could not retrieve medical records' 
+      });
+    }
+  }
+
+  private async getMedicalRecordAdmin(req: Request, res: Response): Promise<void> {
+    try {
+      const medicalRecordId = parseInt(String(req.params.id));
+      
+      if (isNaN(medicalRecordId) || medicalRecordId <= 0) {
+        res.status(400).json({ 
+          error: 'Invalid ID',
+          message: 'Medical record ID must be a positive number' 
+        });
+        return;
+      }
+      
+      const medicalRecord = await this.medicalRecordService.getMedicalRecordById(medicalRecordId);
+      
+      if (!medicalRecord) {
+        res.status(404).json({ 
+          error: 'Medical record not found',
+          message: `Medical record with ID ${medicalRecordId} not found` 
+        });
+        return;
+      }
+      
+      // Admin can see any medical record, no restrictions
+      res.status(200).json({
+        success: true,
+        medicalRecord
+      });
+      
+    } catch (error: any) {
+      console.error('Get medical record (admin) error:', error);
+      
+      res.status(500).json({ 
+        error: 'Internal error',
+        message: 'Could not retrieve medical record' 
       });
     }
   }

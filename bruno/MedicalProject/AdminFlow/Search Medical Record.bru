@@ -1,0 +1,24 @@
+meta {
+  name: Search Medical Record
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/api/medical-records/admin/search?name=Juan
+  body: none
+  auth: inherit
+}
+
+params:query {
+  name: Juan
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

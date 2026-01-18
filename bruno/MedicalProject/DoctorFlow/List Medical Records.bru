@@ -1,0 +1,20 @@
+meta {
+  name: List Medical Records
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/medical-records/doctor/records
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{doctorToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
