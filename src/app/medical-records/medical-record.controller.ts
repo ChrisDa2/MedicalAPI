@@ -38,8 +38,8 @@ export class MedicalRecordController {
 
     // Admin routes
     this.router.get('/admin/all', authenticate, authorize([UserRole.ADMIN]), this.getAllMedicalRecords.bind(this));
-    this.router.get('/admin/:id', authenticate, authorize([UserRole.ADMIN]), this.getMedicalRecordAdmin.bind(this));
     this.router.get('/admin/search', authenticate, authorize([UserRole.ADMIN]), this.searchMedicalRecords.bind(this));
+    this.router.get('/admin/:id', authenticate, authorize([UserRole.ADMIN]), this.getMedicalRecordAdmin.bind(this));
     this.router.put('/admin/:id', authenticate, authorize([UserRole.ADMIN]), this.updateMedicalRecord.bind(this));
   }
 
