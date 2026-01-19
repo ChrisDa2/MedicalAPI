@@ -25,6 +25,10 @@ jest.mock('typedi', () => ({
     Service: () => (target: any) => target
 }));
 
+// Mock console.error and console.log
+const originalConsoleError = console.error;
+const originalConsoleLog = console.log;
+
 describe('HospitalController', () => {
     let app: express.Express;
     let hospitalServiceMock: jest.Mocked<HospitalService>;
@@ -41,6 +45,10 @@ describe('HospitalController', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+
+        // Mock console methods
+        console.error = jest.fn();
+        console.log = jest.fn();
 
         // Create mocks
         databaseServiceMock = {
@@ -75,6 +83,11 @@ describe('HospitalController', () => {
         app = express();
         app.use(express.json());
         app.use('/api/hospitals', hospitalController.getRouter());
+    });
+
+    afterEach(() => {
+        console.error = originalConsoleError;
+        console.log = originalConsoleLog;
     });
 
     // ==================== PUBLIC ROUTES TESTS ====================
