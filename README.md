@@ -55,18 +55,84 @@ The API is structured around four main flows:
 *   `GET /hospitals` - List hospital departments and services.
 
 ## 🛠️ Tech Stack
-*(Añade aquí las tecnologías que usaste, por ejemplo:)*
-*   **Language:** [e.g., Java, Python, Node.js]
-*   **Framework:** [e.g., Spring Boot, Django, Express]
-*   **Database:** [e.g., MySQL, PostgreSQL, MongoDB]
-*   **Authentication:** [e.g., JWT, OAuth2]
+*   **Language:** TypeScript
+*   **Runtime:** Node.js
+*   **Framework:** Express 5
+*   **Database:** SQLite 3 (`sqlite` and `sqlite3`)
+*   **Dependency Injection:** TypeDI
+*   **Authentication:** JSON Web Tokens (JWT) and bcrypt password hashing
+*   **Other Libraries:** CORS, Morgan, dotenv, Lodash
+*   **Testing:** Jest, ts-jest, and Supertest
+*   **API Testing:** Bruno collections
 
 ## ⚙️ How to Run
-*(Añade los pasos básicos para ejecutar tu proyecto, por ejemplo:)*
-1. Clone the repository: `git clone https://github.com/tu-usuario/tu-repositorio.git`
-2. Install dependencies: `npm install` (o el comando que uses)
-3. Set up the database and environment variables.
-4. Run the server: `npm start`
+### Prerequisites
+
+* Node.js 18 or newer
+* npm
+* Git
+
+### Development
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ChrisDa2/MedicalAPI.git
+   cd MedicalAPI
+   ```
+
+2. Install the project dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+The API will be available at `http://localhost:3000/api`. The development database is created automatically at `src/data/medical.db` and includes the required tables, a default admin account, appointment settings, and sample hospitals.
+
+### Default Admin Account
+
+* **Email:** `admin@hospital.com`
+* **Password:** `Admin123`
+
+### Optional Environment Variables
+
+The server defaults to port `3000` and IP `0.0.0.0`. You can override the port or IP with environment variables:
+
+```bash
+set PORT=3000
+set IP=0.0.0.0
+npm run dev
+```
+
+For PowerShell, use:
+
+```powershell
+$env:PORT = "3000"
+$env:IP = "0.0.0.0"
+npm run dev
+```
+
+### Production Build
+
+Compile the TypeScript source and start the generated JavaScript:
+
+```bash
+npm run build
+npm start
+```
+
+The compiled server files are written to the `dist` directory.
+
+### Run Tests
+
+```bash
+npm test
+```
+
+Tests run with `NODE_ENV=test` and use a separate SQLite test database at `src/data/medical-test.db`.
 
 ---
 *Developed by Christian Fuertes Peinado as part of the final practice for Tecnologías Avanzadas in Universidad San Jorge.*
