@@ -1,0 +1,26 @@
+meta {
+  name: Manage Treatment
+  type: http
+  seq: 11
+}
+
+put {
+  url: {{baseUrl}}/api/medical-records/doctor/1/treatment
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{doctorToken}}
+}
+
+body:json {
+  {
+    "treatment": "Rest for 7 days, paracetamol 500mg every 8 hours, plenty of hydration, ibuprofen 400mg if there is muscle pain"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

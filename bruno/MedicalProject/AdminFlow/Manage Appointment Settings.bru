@@ -1,0 +1,28 @@
+meta {
+  name: Manage Appointment Settings
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/api/appointments/admin/settings
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+}
+
+body:json {
+  {
+    "startTime": "08:00",
+    "endTime": "20:00",
+    "duration": 30
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

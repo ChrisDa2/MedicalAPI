@@ -1,0 +1,27 @@
+meta {
+  name: Update Medical Record
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{baseUrl}}/api/medical-records/admin/1
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+}
+
+body:json {
+  {
+    "description": "The patient is presenting with symptoms of the common flu. Follow-up is recommended in 3 days",
+    "treatment": "Rest, prescribed medications, medical follow-up"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

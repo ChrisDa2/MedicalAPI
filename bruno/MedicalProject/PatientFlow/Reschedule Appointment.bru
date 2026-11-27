@@ -1,0 +1,26 @@
+meta {
+  name: Reschedule Appointment
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{baseUrl}}/api/appointments/4
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{patientToken}}
+}
+
+body:json {
+  {
+    "date": "2026-01-25T14:00:00.000Z"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

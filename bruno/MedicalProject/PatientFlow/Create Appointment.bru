@@ -1,0 +1,29 @@
+meta {
+  name: Create Appointment
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/appointments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{patientToken}}
+}
+
+body:json {
+  {
+    "idDoctor": 3,
+    "date": "2026-01-20T10:00:00.000Z",
+    "idSpeciality": 1,
+    "location": "Room 101, City General Hospital"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

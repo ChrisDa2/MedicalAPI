@@ -1,0 +1,26 @@
+meta {
+  name: Filter Hospitals Combined
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/hospitals/search
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "General",
+    "department": "Cardiology",
+    "location": "City Center",
+    "page": 1,
+    "limit": 10
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

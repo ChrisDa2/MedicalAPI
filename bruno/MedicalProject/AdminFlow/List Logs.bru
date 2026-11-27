@@ -1,0 +1,20 @@
+meta {
+  name: List Logs
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/logs/
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

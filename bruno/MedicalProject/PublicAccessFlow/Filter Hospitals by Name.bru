@@ -1,0 +1,22 @@
+meta {
+  name: Filter Hospitals by Name
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/hospitals/search
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "City"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

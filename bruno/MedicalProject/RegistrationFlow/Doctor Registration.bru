@@ -1,0 +1,35 @@
+meta {
+  name: Doctor Registration
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/users/doctors
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Dra. María García",
+    "email": "maria.garcia@example.com",
+    "password": "password123",
+    "telephone": "987654321",
+    "dateBirth": "1985-05-15",
+    "specialty": "Cardiology",
+    "idHospital": 1,
+    "availability": [
+      {
+        "dayOfWeek": 1,
+        "startTime": "09:00",
+        "endTime": "17:00"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

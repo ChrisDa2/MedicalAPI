@@ -1,0 +1,30 @@
+meta {
+  name: Manage Test Results
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{baseUrl}}/api/medical-records/doctor/1/tests
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{doctorToken}}
+}
+
+body:json {
+  {
+    "testResults": [
+      "blood-test-2024-01-15.pdf",
+      "xray-chest-2024-01-15.jpg",
+      "ct-scan-2024-01-16.dcm"
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
